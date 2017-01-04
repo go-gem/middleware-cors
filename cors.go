@@ -4,6 +4,28 @@
 
 /*
 Package corsmidware provides Cross-Origin Resource Sharing middleware for Gem web framework.
+
+Example
+
+	package main
+
+	import (
+		"github.com/go-gem/gem"
+		"github.com/go-gem/middleware-cors"
+		"github.com/rs/cors"
+	)
+
+	var corsMiddleware = corsmidware.New(cors.Options{})
+
+	func main() {
+		router := gem.NewRouter()
+		router.Use(corsMiddleware)
+		router.GET("/", func(ctx *gem.Context) {
+			ctx.HTML(200, "foo")
+		})
+
+		gem.ListenAndServe(":8080", router.Handler())
+	}
 */
 package corsmidware
 
@@ -29,7 +51,7 @@ type CORS struct {
 // Wrap implements the Middleware interface.
 func (c *CORS) Wrap(next gem.Handler) gem.Handler {
 	return gem.HandlerFunc(func(ctx *gem.Context) {
-		c.cors.ServeHTTP(ctx.Response, ctx.Request, func(w http.ResponseWriter, r *http.Request) {
+		c.cors.ServeHTTP(ctx.Response, ctx.Request, func(_ http.ResponseWriter, _ *http.Request) {
 			next.Handle(ctx)
 		})
 	})
